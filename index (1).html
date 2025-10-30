@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payroll Program</title>
+  <style>
+    body {
+      background-color: #4a4a4a;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .input-form {
+      background-color: #FEBA0D8A;
+      border: 2px solid black;
+      border-radius: 15px;
+      padding: 15px 20px;
+      width: 350px;
+      color: black;
+      margin-bottom: 20px;
+    }
+
+    .input-form h2 {
+      text-align: center;
+      color: blue;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 60%;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      display: block;
+      margin: 15px auto 0 auto;
+      background-color: #333;
+      color: white;
+      padding: 8px 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    .payroll-card {
+      background-color: white;
+      width: 350px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #222;
+      text-align: left;
+      display: none; /* Hidden until form submission */
+    }
+
+    .payroll-card h2 {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .info div,
+    .pay div,
+    .deductions div,
+    .net-pay {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .deductions-title {
+      text-align: center;
+      font-weight: bold;
+      margin: 15px 0 8px 0;
+    }
+
+    .total-deduction {
+      font-weight: bold;
+      border-top: 1px solid #333;
+      padding-top: 8px;
+    }
+
+    .net-pay {
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="input-form">
+    <h2>Payroll Program</h2>
+    <form id="payrollForm">
+      <div class="form-group">
+        <label for="idNumber">ID NUMBER</label>
+        <input type="text" id="idNumber" name="idNumber" value="" required />
+      </div>
+      <div class="form-group">
+        <label for="lastName">LAST NAME</label>
+        <input type="text" id="lastName" name="lastName" value="" required />
+      </div>
+      <div class="form-group">
+        <label for="firstName">FIRST NAME</label>
+        <input type="text" id="firstName" name="firstName" value="" required />
+      </div>
+      <div class="form-group">
+        <label for="middleName">MIDDLE NAME</label>
+        <input type="text" id="middleName" name="middleName" value="" required />
+      </div>
+      <div class="form-group">
+        <label for="position">POSITION</label>
+        <input type="text" id="position" name="position" value="" required />
+      </div>
+      <div class="form-group">
+        <label for="rate">RATE</label>
+        <input type="number" id="rate" name="rate" value="" required min="0" />
+      </div>
+      <div class="form-group">
+        <label for="workDays">WORK DAYS</label>
+        <input type="number" id="workDays" name="workDays" value="" required min="0" />
+      </div>
+      <button type="submit">SUBMIT</button>
+    </form>
+  </div>
+
+  <div class="payroll-card" id="payrollCard">
+    <h2>Payroll Program</h2>
+    <div class="info">
+      <div><strong>ID:</strong> <span id="empId"></span></div>
+      <div><strong>NAME:</strong> <span id="empName"></span></div>
+      <div><strong>POSITION:</strong> <span id="empPosition"></span></div>
+      <div><strong>RATE:</strong> <span id="rateDisplay"></span></div>
+      <div><strong>DAYS:</strong> <span id="daysDisplay"></span></div>
+    </div>
+
+    <div class="pay">
+      <div><strong>GROSS PAY:</strong> <span id="grossPay"></span></div>
+    </div>
+
+    <div class="deductions-title">DEDUCTIONS</div>
+    <div class="deductions">
+      <div><span>SSS(5%):</span> <span id="sss"></span></div>
+      <div><span>PAG-IBIG(3%):</span> <span id="pagibig"></span></div>
+      <div><span>PHILHEALTH(2%):</span> <span id="philhealth"></span></div>
+      <div><span>TAX(5%):</span> <span id="tax"></span></div>
+      <div class="total-deduction">
+        <span>TOTAL DEDUCTION:</span> <span id="totalDeduction"></span>
+      </div>
+    </div>
+
+    <div class="net-pay">
+      <strong>NET PAY:</strong> <span id="netPay"></span>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("payrollForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      // Retrieve inputs
+      const idNumber = document.getElementById("idNumber").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const firstName = document.getElementById("firstName").value.trim();
+      const middleName = document.getElementById("middleName").value.trim();
+      const position = document.getElementById("position").value.trim();
+      const rate = parseFloat(document.getElementById("rate").value);
+      const days = parseInt(document.getElementById("workDays").value);
+
+      // Calculate payroll
+      const grossPay = rate * days;
+      const sss = grossPay * 0.05;
+      const pagibig = grossPay * 0.03;
+      const philhealth = grossPay * 0.02;
+      const tax = grossPay * 0.05;
+
+      const totalDeduction = sss + pagibig + philhealth + tax;
+      const netPay = grossPay - totalDeduction;
+
+      // Update payroll card with values
+      document.getElementById("empId").textContent = idNumber;
+      document.getElementById("empName").textContent = `${lastName}, ${firstName} ${middleName}`;
+      document.getElementById("empPosition").textContent = position;
+      document.getElementById("rateDisplay").textContent = rate.toFixed(0);
+      document.getElementById("daysDisplay").textContent = days.toFixed(0);
+      document.getElementById("grossPay").textContent = grossPay.toFixed(2);
+      document.getElementById("sss").textContent = sss.toFixed(2);
+      document.getElementById("pagibig").textContent = pagibig.toFixed(2);
+      document.getElementById("philhealth").textContent = philhealth.toFixed(2);
+      document.getElementById("tax").textContent = tax.toFixed(2);
+      document.getElementById("totalDeduction").textContent = totalDeduction.toFixed(2);
+      document.getElementById("netPay").textContent = netPay.toFixed(2);
+
+      // Show payroll card
+      document.getElementById("payrollCard").style.display = "block";
+    });
+  </script>
+
+</body>
+</html>
